@@ -14,7 +14,7 @@
 
 #Variables
 $IntuneClientID = "d1ddf0e4-d672-4dae-b554-9d5bdfd93547"
-$TenantName = "" #change according to tenant
+$TenantName = "" #change according to tenant e.g. contoso.com
 
 $Win10DeploymentRings = @(
 
