@@ -459,9 +459,8 @@ Ring1: $($AllRing1Devices.Count) ($($Ring1GroupDevices.Count) from $Ring1DeviceG
 Ring2: $($AllRing2Devices.Count) ($($Ring2GroupDevices.Count) from $Ring2DeviceGroupName)
 Ring3: $($AllRing3Devices.Count) ($($Ring3GroupDevices.Count) from $Ring3DeviceGroupName)
 Ring4: $($AllRing4Devices.Count) ($($Ring4GroupDevices.Count) from $Ring4DeviceGroupName)
-`n
 Total excluded devices: $($AllExcludedDevices.Count)
-Total included devices: $($AllSupportedWinDevices.Count)"
+Total included devices: $($AllSupportedWinDevices.Count)
 "@ | Write-Output
 
 ################################
