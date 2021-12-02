@@ -446,13 +446,23 @@ Foreach($User in $Ring3UserGroupMembers){
 [array]$AllRing3Devices = ($Ring3Devices + $Ring3GroupDevices) | Where-Object {($_.Id -notin $AllRing1Devices.Id) -and ($_.Id -notin $AllRing2Devices.Id)} | Sort-Object -Property Id -Unique
 [array]$AllRing4Devices = ($AllSupportedWinDevicesNoPrimaryDevices[0..$AllSupportedWinDevicesNoPrimaryDevices.Count] + $Ring4GroupDevices) | Where-Object {($_.Id -notin $AllRing1Devices.Id) -and ($_.Id -notin $AllRing2Devices.Id) -and ($_.Id -notin $AllRing3Devices.Id)} | Sort-Object -Property Id -Unique
 
-Write-Output "[Rings]::Device statistics:`nRing1: $($AllRing1Devices.Count) ($($Ring1GroupDevices.Count) from $Ring1DeviceGroupName)`nRing2: $($AllRing2Devices.Count) ($($Ring2GroupDevices.Count) from $Ring2DeviceGroupName)`nRing3: $($AllRing3Devices.Count) ($($Ring3GroupDevices.Count) from $Ring3DeviceGroupName)`nRing4: $($AllRing4Devices.Count) ($($Ring4GroupDevices.Count) from $Ring4DeviceGroupName)`nTotal excluded devices: $($AllExcludedDevices.Count)`nTotal included devices: $($AllSupportedWinDevices.Count)"
-
 #Split the objects into the count of groups sorting them (sort on multiple properties in case they where created on the same date/time)
 [array]$Ring1Groupings = Split-Array -InArray ($AllRing1Devices | Sort-Object -Property createdDateTime,displayName) -Parts $NumberOfGroupsRing1
 [array]$Ring2Groupings = Split-Array -InArray ($AllRing2Devices | Sort-Object -Property createdDateTime,displayName) -Parts $NumberOfGroupsRing2
 [array]$Ring3Groupings = Split-Array -InArray ($AllRing3Devices | Sort-Object -Property createdDateTime,displayName) -Parts $NumberOfGroupsRing3
 [array]$Ring4Groupings = Split-Array -InArray ($AllRing4Devices | Sort-Object -Property createdDateTime,displayName) -Parts $NumberOfGroupsRing4
+
+#Write statistics to output
+@"
+[Rings]::Device statistics:
+Ring1: $($AllRing1Devices.Count) ($($Ring1GroupDevices.Count) from $Ring1DeviceGroupName)
+Ring2: $($AllRing2Devices.Count) ($($Ring2GroupDevices.Count) from $Ring2DeviceGroupName)
+Ring3: $($AllRing3Devices.Count) ($($Ring3GroupDevices.Count) from $Ring3DeviceGroupName)
+Ring4: $($AllRing4Devices.Count) ($($Ring4GroupDevices.Count) from $Ring4DeviceGroupName)
+`n
+Total excluded devices: $($AllExcludedDevices.Count)
+Total included devices: $($AllSupportedWinDevices.Count)"
+"@ | Write-Output
 
 ################################
 #Running Ring1
