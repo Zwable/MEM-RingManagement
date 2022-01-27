@@ -118,6 +118,7 @@ function Send-Teams {
     #Invoke rest method
     $Response = Invoke-RestMethod -uri $URL -Method Post -body $body -ContentType 'application/json'
 }
+#split objects into desired parts of groupings
 function Split-Array {
     param (
         [array]$InArray,
@@ -160,6 +161,7 @@ function Split-Array {
     #Return output
     Return ,$OutArray
 }
+#get azure ad group from graph
 function Get-AzureADGroup {
     param (
         [Parameter(Mandatory=$true)]$AuthHeader,
@@ -178,6 +180,7 @@ function Get-AzureADGroup {
     #Return reponse
     return [array]$Group.value
 }
+#get azure ad user owned device from graph
 function Get-AzureADUserOwnedDevice {
     param (
         [Parameter(Mandatory=$true)]$AuthHeader,
@@ -195,6 +198,7 @@ function Get-AzureADUserOwnedDevice {
     #Return reponse
     return [array]$Devices.value
 }
+#get azure ad devices from graph
 function Get-AzureADDevice {
     param (
         [Parameter(Mandatory=$true)]$AuthHeader,
@@ -224,6 +228,7 @@ function Get-AzureADDevice {
     return [array]$Members
 
 }
+#add azure ad group member
 function Add-AzureADGroupMember {
     param (
         [Parameter(Mandatory=$true)]$AuthHeader,
@@ -258,6 +263,7 @@ function Add-AzureADGroupMember {
         $Response = Invoke-RestMethod -Method Patch -Headers $Headers -Body $json -Uri "https://graph.microsoft.com/$APIVersion/groups/$GroupID" -ContentType "application/json"
     }
 }
+#remove azure ad group member
 function Remove-AzureADGroupMember {
     param (
         [Parameter(Mandatory=$true)]$AuthHeader,
@@ -273,6 +279,7 @@ function Remove-AzureADGroupMember {
     #Do the call
     $Response = Invoke-RestMethod -Method Delete -Headers $Headers -Uri "https://graph.microsoft.com/$APIVersion/groups/$GroupID/members/$MemberID/`$ref" -ContentType "application/json"
 }
+#get azure ad group members
 function Get-AzureADGroupMembers {
     param (
         [Parameter(Mandatory=$true)]$AuthHeader,
@@ -322,6 +329,7 @@ function Get-AzureADGroupMembers {
     #Return reponse
     return [array]$Members
 }
+#add azure ad group members in nested groups
 function Get-AzureADNestedGroupObjects {
     Param
     (
@@ -358,6 +366,7 @@ function Get-AzureADNestedGroupObjects {
     #Return the users (in case object belongs to multiple nested groups, get unique)
     Return ($Objects | Sort-Object -Property id -Unique)
 }
+#create new azure ad groups
 function New-AzureADGroup {
     param (
         [Parameter(Mandatory=$true)]$AuthHeader,
@@ -385,6 +394,7 @@ function New-AzureADGroup {
     #Return object
     return $Response
 }
+#get or create azure ad group
 function Get-CreateOrGetAzureADGroup {
     param (
         [Parameter(Mandatory=$true)]$AuthHeader,
@@ -410,6 +420,7 @@ function Get-CreateOrGetAzureADGroup {
     #Return group
     return $Group
 }
+#invoke alligment
 function Invoke-RingGroupsMembershipAlligment {
     param (
         $GroupPrefix,
@@ -531,25 +542,35 @@ catch {
     Throw $_
 }
 
+try {
 
-#Get/Create user groups
-$Ring1UserGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring1UserGroupName -Description "Do not change the name or description of this group. This group contains users for Ring 1"
-$Ring2UserGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring2UserGroupName -Description "Do not change the name or description of this group. This group contains users for Ring 2"
-$Ring3UserGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring3UserGroupName -Description "Do not change the name or description of this group. This group contains users for Ring 3"
+    #Get/Create user groups
+    $Ring1UserGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring1UserGroupName -Description "Do not change the name or description of this group. This group contains users for Ring 1"
+    $Ring2UserGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring2UserGroupName -Description "Do not change the name or description of this group. This group contains users for Ring 2"
+    $Ring3UserGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring3UserGroupName -Description "Do not change the name or description of this group. This group contains users for Ring 3"
 
-#Get/Create device groups
-$Ring1DeviceGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring1DeviceGroupName -Description "Do not change the name or description of this group. This group contains devices for Ring 1"
-$Ring2DeviceGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring2DeviceGroupName -Description "Do not change the name or description of this group. This group contains devices for Ring 2" 
-$Ring3DeviceGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring3DeviceGroupName -Description "Do not change the name or description of this group. This group contains devices for Ring 3"
-$Ring4DeviceGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring4DeviceGroupName -Description "Do not change the name or description of this group. This group contains devices for Ring 4"
-$GroupExcludedDevices = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $GroupExcludedDevicesName -Description "Do not change the name or description of this group. This group contains devices excluded from the rings. Nested groups are supported. User objects will be ignored."
+    #Get/Create device groups
+    $Ring1DeviceGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring1DeviceGroupName -Description "Do not change the name or description of this group. This group contains devices for Ring 1"
+    $Ring2DeviceGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring2DeviceGroupName -Description "Do not change the name or description of this group. This group contains devices for Ring 2" 
+    $Ring3DeviceGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring3DeviceGroupName -Description "Do not change the name or description of this group. This group contains devices for Ring 3"
+    $Ring4DeviceGroup = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $Ring4DeviceGroupName -Description "Do not change the name or description of this group. This group contains devices for Ring 4"
+    $GroupExcludedDevices = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -DisplayName $GroupExcludedDevicesName -Description "Do not change the name or description of this group. This group contains devices excluded from the rings. Nested groups are supported. User objects will be ignored."
 
-#Get devices for device groups, we need to exclude these from the global scope as they need to be enforced to each ring later
-[array]$Ring1GroupDevices = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring1DeviceGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.device"}
-[array]$Ring2GroupDevices = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring2DeviceGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.device"}
-[array]$Ring3GroupDevices = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring3DeviceGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.device"}
-[array]$Ring4GroupDevices = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring4DeviceGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.device"}
-[array]$AllExcludedDevices = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $GroupExcludedDevices | Where-Object {$_."@odata.type" -eq "#microsoft.graph.device"}
+    #Get devices for device groups, we need to exclude these from the global scope as they need to be enforced to each ring later
+    [array]$Ring1GroupDevices = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring1DeviceGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.device"}
+    [array]$Ring2GroupDevices = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring2DeviceGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.device"}
+    [array]$Ring3GroupDevices = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring3DeviceGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.device"}
+    [array]$Ring4GroupDevices = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring4DeviceGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.device"}
+    [array]$AllExcludedDevices = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $GroupExcludedDevices | Where-Object {$_."@odata.type" -eq "#microsoft.graph.device"}
+}
+catch {
+
+    #Exit if failed to get access token
+    if($EnableTeamsNotification){
+        Send-Teams -JobName $JobName -JobTitle "Failed" -StatusText ("Execution failed with: {0}" -f $_) -URL $WebHookUrl -Image $PictureBase64
+    }
+    Throw $_
+}
 
 #Remove the excluded devices from the allsupported win devcices
 [array]$AllSupportedWinDevices = $AllSupportedWinDevices | Where-Object {$_.Id -notin $AllExcludedDevices.Id}
@@ -563,30 +584,41 @@ $GroupExcludedDevices = Get-CreateOrGetAzureADGroup -AuthHeader $AuthHeader -Dis
 ################################
 #Running define device groupings
 ################################
+try {
 
-#Allign Ring1 groups with users devices (Primary Devices in Intune)
-[array]$Ring1UserGroupMembers = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring1UserGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.user"}
-Foreach($User in $Ring1UserGroupMembers){
+    #Allign Ring1 groups with users devices (Primary Devices in Intune)
+    [array]$Ring1UserGroupMembers = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring1UserGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.user"}
+    Foreach($User in $Ring1UserGroupMembers){
 
-    #Add all users Primary Devices to an array and ensure they are part of the supported device list
-    [array]$Ring1Devices += (Get-AzureADUserOwnedDevice -AuthHeader $AuthHeader  -Id $User.Id | Where-Object {$_.Id -in $GlobalWinDevices.Id}) 
+        #Add all users Primary Devices to an array and ensure they are part of the supported device list
+        [array]$Ring1Devices += (Get-AzureADUserOwnedDevice -AuthHeader $AuthHeader  -Id $User.Id | Where-Object {$_.Id -in $GlobalWinDevices.Id}) 
+    }
+
+    #Allign Ring2 groups with users devices (Primary Devices in Intune)
+    [array]$Ring2UserGroupMembers = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring2UserGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.user"}
+    Foreach($User in $Ring2UserGroupMembers){
+
+        #Add all users Primary Devices to an array and ensure they are part of the supported device list (sort out devices from Ring1 as users can be in more groups)
+        [array]$Ring2Devices += (Get-AzureADUserOwnedDevice -AuthHeader $AuthHeader  -Id $User.Id | Where-Object {($_.Id -in $GlobalWinDevices.Id) -and ($_.Id -notin $Ring1Devices.Id)})
+    }
+
+    #Allign Ring2 groups with users devices (Primary Devices in Intune)
+    [array]$Ring3UserGroupMembers = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring3UserGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.user"}
+    Foreach($User in $Ring3UserGroupMembers){
+
+        #Add all users Primary Devices to an array and ensure they are part of the supported device list (sort out devices from Ring1 and Ring2 as users can be in more groups)
+        [array]$Ring3Devices += (Get-AzureADUserOwnedDevice -AuthHeader $AuthHeader  -Id $User.Id | Where-Object {($_.Id -in $GlobalWinDevices.Id) -and ($_.Id -notin $Ring1Devices.Id) -and ($_.Id -notin $Ring2Devices.Id)})
+    }
+}
+catch {
+
+    #Exit if failed to get access token
+    if($EnableTeamsNotification){
+        Send-Teams -JobName $JobName -JobTitle "Failed" -StatusText ("Execution failed with: {0}" -f $_) -URL $WebHookUrl -Image $PictureBase64
+    }
+    Throw $_
 }
 
-#Allign Ring2 groups with users devices (Primary Devices in Intune)
-[array]$Ring2UserGroupMembers = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring2UserGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.user"}
-Foreach($User in $Ring2UserGroupMembers){
-
-    #Add all users Primary Devices to an array and ensure they are part of the supported device list (sort out devices from Ring1 as users can be in more groups)
-    [array]$Ring2Devices += (Get-AzureADUserOwnedDevice -AuthHeader $AuthHeader  -Id $User.Id | Where-Object {($_.Id -in $GlobalWinDevices.Id) -and ($_.Id -notin $Ring1Devices.Id)})
-}
-
-#Allign Ring2 groups with users devices (Primary Devices in Intune)
-[array]$Ring3UserGroupMembers = Get-AzureADNestedGroupObjects -AuthHeader $AuthHeader -GroupObj $Ring3UserGroup | Where-Object {$_."@odata.type" -eq "#microsoft.graph.user"}
-Foreach($User in $Ring3UserGroupMembers){
-
-    #Add all users Primary Devices to an array and ensure they are part of the supported device list (sort out devices from Ring1 and Ring2 as users can be in more groups)
-    [array]$Ring3Devices += (Get-AzureADUserOwnedDevice -AuthHeader $AuthHeader  -Id $User.Id | Where-Object {($_.Id -in $GlobalWinDevices.Id) -and ($_.Id -notin $Ring1Devices.Id) -and ($_.Id -notin $Ring2Devices.Id)})
-}
 
 #Remove all the Primary User based devices from the device pool before defining major groups
 [array]$AllSupportedWinDevicesNoPrimaryDevices = $GlobalWinDevices | Where-Object{($_.Id -notin $Ring1Devices.Id) -and ($_.Id -notin $Ring2Devices.Id) -and ($_.Id -notin $Ring3Devices.Id)} | Sort-Object -Property Id
@@ -612,11 +644,23 @@ Total excluded devices: $($AllExcludedDevices.Count)
 Total included devices: $($AllSupportedWinDevices.Count)
 "@ | Write-Output
 
-#Invoke alligment
-Invoke-RingGroupsMembershipAlligment -GroupPrefix $PrefixGroupRing1 -GrpoupSuffix $SuffixGroupRing1 -NumberOfGroups $NumberOfGroupsRing1 -GroupMembers $AllRing1Devices -AuthHeader $AuthHeader 
-Invoke-RingGroupsMembershipAlligment -GroupPrefix $PrefixGroupRing2 -GrpoupSuffix $SuffixGroupRing2 -NumberOfGroups $NumberOfGroupsRing2 -GroupMembers $AllRing2Devices -AuthHeader $AuthHeader 
-Invoke-RingGroupsMembershipAlligment -GroupPrefix $PrefixGroupRing3 -GrpoupSuffix $SuffixGroupRing3 -NumberOfGroups $NumberOfGroupsRing3 -GroupMembers $AllRing3Devices -AuthHeader $AuthHeader 
-Invoke-RingGroupsMembershipAlligment -GroupPrefix $PrefixGroupRing4 -GrpoupSuffix $SuffixGroupRing4 -NumberOfGroups $NumberOfGroupsRing4 -GroupMembers $AllRing4Devices -AuthHeader $AuthHeader 
+
+try {
+
+    #Invoke alligment
+    Invoke-RingGroupsMembershipAlligment -GroupPrefix $PrefixGroupRing1 -GrpoupSuffix $SuffixGroupRing1 -NumberOfGroups $NumberOfGroupsRing1 -GroupMembers $AllRing1Devices -AuthHeader $AuthHeader 
+    Invoke-RingGroupsMembershipAlligment -GroupPrefix $PrefixGroupRing2 -GrpoupSuffix $SuffixGroupRing2 -NumberOfGroups $NumberOfGroupsRing2 -GroupMembers $AllRing2Devices -AuthHeader $AuthHeader 
+    Invoke-RingGroupsMembershipAlligment -GroupPrefix $PrefixGroupRing3 -GrpoupSuffix $SuffixGroupRing3 -NumberOfGroups $NumberOfGroupsRing3 -GroupMembers $AllRing3Devices -AuthHeader $AuthHeader 
+    Invoke-RingGroupsMembershipAlligment -GroupPrefix $PrefixGroupRing4 -GrpoupSuffix $SuffixGroupRing4 -NumberOfGroups $NumberOfGroupsRing4 -GroupMembers $AllRing4Devices -AuthHeader $AuthHeader 
+}
+catch {
+
+    #Exit if failed to get access token
+    if($EnableTeamsNotification){
+        Send-Teams -JobName $JobName -JobTitle "Failed" -StatusText ("Execution failed with: {0}" -f $_) -URL $WebHookUrl -Image $PictureBase64
+    }
+    Throw $_    
+}
 
 #Completion
 $CompletionText = ("Script completed in {0}" -f (New-TimeSpan -Start $StartTime -End (Get-Date)).ToString("dd' days 'hh' hours 'mm' minutes 'ss' seconds'"))
